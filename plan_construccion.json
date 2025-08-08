@@ -2,17 +2,22 @@
   "api_contract": {
     "/api/inmuebles": {
       "GET": {
-        "descripcion": "Obtiene la lista completa de inmuebles con información del propietario.",
+        "descripcion": "Obtiene lista de inmuebles con datos del propietario.",
         "respuesta_esperada": [
           {
             "id": "integer",
             "direccion": "string",
             "ciudad": "string",
-            "tipo": "string (Valores: 'Piso', 'Casa', 'Local')",
+            "tipo": "string ('Piso', 'Casa', 'Local')",
             "precio_alquiler": "float",
             "disponible": "boolean",
             "propietario_id": "integer",
-            "propietario_nombre": "string"
+            "propietario": {
+              "id": "integer",
+              "nombre": "string",
+              "email": "string",
+              "telefono": "string"
+            }
           }
         ]
       },
@@ -21,42 +26,42 @@
         "parametros_entrada": {
           "direccion": "string",
           "ciudad": "string",
-          "tipo": "string",
+          "tipo": "string ('Piso', 'Casa', 'Local')",
           "precio_alquiler": "float",
-          "disponible": "boolean",
+          "disponible": "boolean (opcional)",
           "propietario_id": "integer"
         },
         "respuesta_esperada": {
           "id": "integer",
           "direccion": "string",
           "ciudad": "string",
-          "tipo": "string",
+          "tipo": "string ('Piso', 'Casa', 'Local')",
           "precio_alquiler": "float",
           "disponible": "boolean",
           "propietario_id": "integer"
         }
       },
-      "PUT": {
+      "PUT /api/inmuebles/<id>": {
         "descripcion": "Actualiza un inmueble existente.",
         "parametros_entrada": {
-          "direccion": "string",
-          "ciudad": "string",
-          "tipo": "string",
-          "precio_alquiler": "float",
-          "disponible": "boolean",
-          "propietario_id": "integer"
+          "direccion": "string (opcional)",
+          "ciudad": "string (opcional)",
+          "tipo": "string ('Piso', 'Casa', 'Local') (opcional)",
+          "precio_alquiler": "float (opcional)",
+          "disponible": "boolean (opcional)",
+          "propietario_id": "integer (opcional)"
         },
         "respuesta_esperada": {
           "id": "integer",
           "direccion": "string",
           "ciudad": "string",
-          "tipo": "string",
+          "tipo": "string ('Piso', 'Casa', 'Local')",
           "precio_alquiler": "float",
           "disponible": "boolean",
           "propietario_id": "integer"
         }
       },
-      "DELETE": {
+      "DELETE /api/inmuebles/<id>": {
         "descripcion": "Elimina un inmueble.",
         "respuesta_esperada": {
           "mensaje": "string"
@@ -65,7 +70,7 @@
     },
     "/api/propietarios": {
       "GET": {
-        "descripcion": "Obtiene la lista completa de propietarios.",
+        "descripcion": "Obtiene lista de propietarios.",
         "respuesta_esperada": [
           {
             "id": "integer",
@@ -81,36 +86,37 @@
     {
       "etapa": "backend",
       "tareas": [
-        "Inicializar un proyecto Flask con la estructura de carpetas 'app', 'models', 'routes' y archivos '__init__.py'.",
-        "Configurar Flask-SQLAlchemy para usar el archivo SQLite 'inmobiliaria.db' como fuente de datos.",
-        "Definir los modelos SQLAlchemy correspondientes a las entidades propietarios, inmuebles e inquilinos con sus relaciones FK.",
-        "Crear un esquema de migración básica (o script de creación) que genere las tablas en la base de datos al arrancar el servidor.",
-        "Implementar la ruta GET '/api/inmuebles' que consulta todos los inmuebles y devuelve JSON con los campos especificados, incluyendo nombre del propietario mediante join.",
-        "Implementar la ruta POST '/api/inmuebles' que valida los datos recibidos, crea un nuevo registro en la tabla inmuebles y retorna el objeto creado.",
-        "Implementar la ruta PUT '/api/inmuebles/<id>' que actualiza el inmueble identificado por <id> con los campos enviados y devuelve el registro actualizado.",
-        "Implementar la ruta DELETE '/api/inmuebles/<id>' que elimina el inmueble correspondiente y responde con un mensaje de éxito.",
-        "Implementar la ruta GET '/api/propietarios' que lista todos los propietarios en formato JSON.",
-        "Añadir manejo de errores HTTP (404, 400, 500) para cada endpoint y devolver respuestas JSON estructuradas.",
-        "Configurar CORS para permitir peticiones desde el dominio del frontend (localhost).",
-        "Escribir pruebas unitarias básicas con pytest que verifiquen la correcta operación de los endpoints CRUD.",
-        "Documentar en README las instrucciones para iniciar el servidor Flask y generar la base de datos."
+        "Crear la estructura de directorios del proyecto Flask con carpetas para app, models, routes y config.",
+        "Instalar e inicializar Flask-SQLAlchemy conectándose a la base SQLite 'inmobiliaria.db'.",
+        "Definir los modelos SQLAlchemy para Propietario, Inmueble e Inquilino según el esquema de datos proporcionado.",
+        "Crear un script de migración o inicialización que genere las tablas en la base de datos si no existen.",
+        "Implementar el endpoint GET '/api/inmuebles' que realice una consulta JOIN con propietarios y devuelva la lista conforme al contrato API.",
+        "Implementar el endpoint POST '/api/inmuebles' validando los campos requeridos, creando un registro e insertándolo en la base de datos.",
+        "Implementar el endpoint PUT '/api/inmuebles/<id>' que actualice solo los campos proporcionados y retorne el objeto actualizado.",
+        "Implementar el endpoint DELETE '/api/inmuebles/<id>' que elimine el inmueble y responda con un mensaje de confirmación.",
+        "Implementar el endpoint GET '/api/propietarios' que devuelva la lista completa de propietarios.",
+        "Agregar manejo centralizado de errores para respuestas HTTP 400, 404 y 500 siguiendo buenas prácticas REST.",
+        "Configurar CORS para permitir peticiones desde el archivo 'index.html'.",
+        "Escribir pruebas unitarias básicas para cada endpoint utilizando Flask's test client.",
+        "Documentar la API con comentarios en los archivos de rutas y modelos.",
+        "Preparar un script de inicio que ejecute la aplicación en modo desarrollo."
       ]
     },
     {
       "etapa": "frontend",
       "tareas": [
-        "Crear un archivo 'index.html' con la estructura básica HTML5, encabezado, cuerpo y meta viewport.",
-        "Incorporar CSS mínimo inline dentro del <style> para dar estilo a una tabla o tarjetas que mostrarán los inmuebles.",
-        "Añadir un contenedor principal donde se renderizará la lista de inmuebles.",
-        "Crear un formulario de entrada con campos: dirección, ciudad, tipo (select), precio_alquiler, disponible (checkbox) y propietario_id (select).",
-        "Cargar la lista de propietarios desde '/api/propietarios' al iniciar la página para poblar el selector del propietario.",
-        "Implementar función JavaScript que obtenga todos los inmuebles desde '/api/inmuebles' y renderice cada uno con sus datos, incluyendo botones 'Editar' y 'Eliminar'.",
-        "Añadir manejador de evento para el botón 'Eliminar' que envíe una solicitud DELETE al endpoint correspondiente y actualice la vista sin recargar.",
-        "Implementar lógica para el botón 'Editar' que muestre un formulario pre-rellenado con los datos del inmueble seleccionado, permitiendo modificar y enviar mediante PUT a la API.",
-        "Añadir evento submit al formulario de creación que envíe una solicitud POST a '/api/inmuebles', añadiendo el nuevo registro a la lista mostrada.",
-        "Incluir manejo básico de errores en las llamadas fetch para mostrar mensajes de alerta al usuario cuando la API falle.",
-        "Garantizar que todas las interacciones se realicen mediante JavaScript ES6 y sin dependencias externas.",
-        "Probar la aplicación localmente asegurándose de que CRUD funciona correctamente con el backend Flask."
+        "Crear el archivo 'index.html' con estructura básica HTML5, incluyendo enlaces a estilos CSS internos y script JavaScript inline.",
+        "Diseñar una sección principal que contenga un contenedor para la lista de inmuebles en formato tabla o tarjetas.",
+        "Implementar una función JavaScript que haga fetch GET '/api/inmuebles' y renderice cada inmueble mostrando dirección, precio y nombre del propietario.",
+        "Agregar un formulario al final de la página con campos: dirección, ciudad, tipo (dropdown), precio_alquiler, disponible (checkbox) y selector de propietario cargado desde GET '/api/propietarios'.",
+        "Implementar el manejador de envío del formulario que envíe una petición POST a '/api/inmuebles' y refresque la lista tras éxito.",
+        "Añadir un botón 'Eliminar' en cada elemento listado que dispare una petición DELETE y actualice la vista sin recargar la página.",
+        "Agregar un botón 'Editar' que abra un modal o sección emergente con los datos actuales del inmueble prellenados.",
+        "Implementar el manejo de envío del formulario de edición que envíe una petición PUT a '/api/inmuebles/<id>' y actualice la vista.",
+        "Incluir mensajes de éxito y error en la interfaz usando alertas simples dentro del HTML.",
+        "Optimizar el JavaScript para evitar re-renderizados innecesarios, reutilizando funciones de creación de elementos DOM.",
+        "Asegurar que todos los estilos estén definidos inline o en un bloque <style> interno para mantener la aplicación autocontenida.",
+        "Agregar comentarios breves sobre cada función JavaScript indicando su propósito y flujo."
       ]
     }
   ]
