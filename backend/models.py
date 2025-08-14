@@ -1,8 +1,4 @@
-from . import create_app
-
-# Se importa la instancia de db desde el factory
-_app = create_app()
-db = _app.db
+from . import db
 
 class Propietario(db.Model):
     __tablename__ = 'propietarios'
@@ -28,10 +24,12 @@ class Inmueble(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     direccion = db.Column(db.String, nullable=False)
     ciudad = db.Column(db.String, nullable=False)
-    tipo = db.Column(db.String, nullable=False)
+    tipo = db.Column(db.String)  # 'Piso', 'Casa', 'Local'
     precio_alquiler = db.Column(db.Float)
     disponible = db.Column(db.Boolean, default=True)
-    propietario_id = db.Column(db.Integer, db.ForeignKey('propietarios.id'), nullable=False)
+    propietario_id = db.Column(db.Integer, db.ForeignKey('propietarios.id'))
+
+    inquilino = db.relationship('Inquilino', backref='inmueble', uselist=False)
 
     def to_dict(self):
         return {
