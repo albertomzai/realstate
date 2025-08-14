@@ -1,0 +1,78 @@
+{
+  "api_contract": {
+    "ruta": "/api/inmuebles",
+    "metodo": [
+      "GET",
+      "POST"
+    ],
+    "descripcion": "Gestiona la lista de inmuebles y la creación de un nuevo inmueble.",
+    "parametros_entrada_post": {
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string (Valores: 'Piso', 'Casa', 'Local')",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    },
+    "respuesta_get": {
+      "inmuebles": [
+        {
+          "id": "integer",
+          "direccion": "string",
+          "ciudad": "string",
+          "tipo": "string",
+          "precio_alquiler": "float",
+          "disponible": "boolean",
+          "propietario": {
+            "id": "integer",
+            "nombre": "string",
+            "email": "string",
+            "telefono": "string"
+          }
+        }
+      ]
+    },
+    "respuesta_post": {
+      "id": "integer",
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    }
+  },
+  "plan": [
+    {
+      "etapa": "backend",
+      "tareas": [
+        "Inicializar un proyecto Flask con la estructura de carpetas backend/ y tests/.",
+        "Crear el archivo backend/__init__.py que defina la factory create_app.",
+        "Configurar SQLAlchemy en la factory para usar SQLite 'inmobiliaria.db'.",
+        "Definir modelos Propietario, Inmueble e Inquilino con relaciones adecuadas.",
+        "Crear un Blueprint llamado inmuebles_bp y registrarlo en create_app.",
+        "Implementar el endpoint GET '/api/inmuebles' que devuelva la lista de inmuebles con datos del propietario.",
+        "Implementar el endpoint POST '/api/inmuebles' para crear un nuevo inmueble, validando los campos requeridos.",
+        "Añadir endpoints PUT y DELETE '/api/inmuebles/<int:id>' para actualizar y eliminar inmuebles respectivamente.",
+        "Crear otro Blueprint propietarios_bp con endpoint GET '/api/propietarios' que devuelva la lista de propietarios.",
+        "Escribir tests unitarios en tests/test_backend.py usando el test client de Flask para verificar los endpoints CRUD.",
+        "Agregar un requirements.txt que incluya 'Flask', 'Flask-SQLAlchemy', y 'pytest'.",
+        "Crear app.py en la raíz que importe create_app y lance la aplicación."
+      ]
+    },
+    {
+      "etapa": "frontend",
+      "tareas": [
+        "Crear el archivo frontend/index.html con estructura básica de HTML5.",
+        "Incluir una tabla o contenedor para listar los inmuebles obtenidos vía fetch a '/api/inmuebles'.",
+        "Agregar un formulario con campos direccion, ciudad, tipo (select), precio_alquiler, disponible (checkbox) y propietario_id (select cargado desde '/api/propietarios').",
+        "Implementar botones de 'Editar' y 'Eliminar' para cada inmueble listado.",
+        "Al hacer clic en 'Editar', mostrar un modal o sección con el formulario pre-rellenado usando los datos del inmueble seleccionado.",
+        "En el evento submit del formulario, enviar POST a '/api/inmuebles' o PUT a '/api/inmuebles/<id>' según corresponda.",
+        "Para 'Eliminar', enviar DELETE a '/api/inmuebles/<id>'.",
+        "Actualizar la vista de lista tras cada operación sin recargar la página.",
+        "Agregar manejo básico de errores y mensajes al usuario en caso de fallos de la API."
+      ]
+    }
+  ]
+}
