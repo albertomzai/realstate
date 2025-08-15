@@ -1,0 +1,129 @@
+{
+  "api_contract": {
+    "ruta_inmuebles_get": "/api/inmuebles",
+    "metodo_get": "GET",
+    "descripcion": "Devuelve todos los propietarios.",
+    "respuesta_esperada": [
+      {
+        "id": "integer",
+        "direccion": "string",
+        "ciudad": "string",
+        "tipo": "string (Valores: 'Piso', 'Casa', 'Local')",
+        "precio_alquiler": "float",
+        "disponible": "boolean",
+        "propietario_id": "integer",
+        "propietario_nombre": "string"
+      }
+    ],
+    "ruta_inmuebles_post": "/api/inmuebles",
+    "metodo_post": "POST",
+    "parametros_entrada": {
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    },
+    "respuesta_post": {
+      "id": "integer",
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    },
+    "ruta_inmuebles_put": "/api/inmuebles/<id>",
+    "metodo_put": "PUT",
+    "parametros_entrada_put": {
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    },
+    "respuesta_put": {
+      "id": "integer",
+      "direccion": "string",
+      "ciudad": "string",
+      "tipo": "string",
+      "precio_alquiler": "float",
+      "disponible": "boolean",
+      "propietario_id": "integer"
+    },
+    "ruta_inmuebles_delete": "/api/inmuebles/<id>",
+    "metodo_delete": "DELETE",
+    "respuesta_delete": {
+      "message": "string"
+    },
+    "ruta_propietarios_get": "/api/propietarios",
+    "metodo_propietarios_get": "GET",
+    "respuesta_esperada_propietarios": [
+      {
+        "id": "integer",
+        "nombre": "string",
+        "email": "string",
+        "telefono": "string"
+      }
+    ]
+  },
+  "contrato_qa_e2e": {
+    "lista_inmuebles_table": "inmuebles-table",
+    "boton_agregar_inmueble": "btn-agregar-inmueble",
+    "formulario_nuevo_inmueble": "form-nuevo-inmueble",
+    "campo_direccion_input": "input-direccion",
+    "campo_ciudad_input": "input-ciudad",
+    "select_propietario_select": "select-propietario",
+    "boton_guardar_inmueble": "btn-guardar-inmueble",
+    "tabla_propietarios_table": "propietarios-table",
+    "link_a_propietarios": "link-usuarios"
+  },
+  "plan": [
+    {
+      "etapa": "backend",
+      "tareas": [
+        "Crear la estructura de directorios: backend/, backend/models.py, backend/routes.py, backend/__init__.py.",
+        "Definir el objeto Flask y la configuración para usar SQLAlchemy con SQLite 'inmobiliaria.db'.",
+        "Implementar los modelos Propietario, Inmueble e Inquilino en backend/models.py con relaciones adecuadas.",
+        "Crear un Blueprint llamado 'api' en backend/routes.py y registrarlo en create_app.",
+        "Definir el endpoint GET '/api/inmuebles' que consulta todos los inmuebles y serializa la respuesta incluyendo el nombre del propietario.",
+        "Definir el endpoint POST '/api/inmuebles' que recibe JSON, valida campos obligatorios, crea un Inmueble y devuelve el objeto creado.",
+        "Definir el endpoint PUT '/api/inmuebles/<int:id>' que actualiza los atributos de un inmueble existente y devuelve el objeto actualizado.",
+        "Definir el endpoint DELETE '/api/inmuebles/<int:id>' que elimina el registro y devuelve un mensaje JSON.",
+        "Definir el endpoint GET '/api/propietarios' que lista todos los propietarios con sus datos básicos.",
+        "Añadir manejo de errores HTTP 404 y 400 para recursos no encontrados o payload inválido.",
+        "Crear el archivo requirements.txt con 'Flask', 'Flask-SQLAlchemy', 'pytest'.",
+        "Crear un script de inicialización de la base de datos que cree las tablas si no existen.",
+        "Añadir tests unitarios en tests/test_backend.py para cubrir los cuatro endpoints de inmuebles y el endpoint de propietarios.",
+        "Configurar pytest.ini con pythonpath = ."
+      ]
+    },
+    {
+      "etapa": "frontend",
+      "tareas": [
+        "Crear frontend/index.html con una tabla que muestre la lista de inmuebles usando data-testid 'inmuebles-table'.",
+        "Agregar un formulario modal para crear y editar inmuebles, con inputs: direccion, ciudad, tipo (select), precio_alquiler, disponible (checkbox) y propietario (select).",
+        "Cargar los propietarios en el selector del formulario mediante una llamada a '/api/propietarios' y usar data-testid 'select-propietario'.",
+        "Implementar botones 'Editar' y 'Eliminar' dentro de cada fila de la tabla con data-testid 'btn-editar-<id>' y 'btn-eliminar-<id>'.",
+        "Añadir un botón global 'Agregar Inmueble' que abre el modal, con data-testid 'btn-agregar-inmueble'.",
+        "Implementar las funciones JavaScript inline para manejar los eventos de crear, actualizar y eliminar usando fetch a la API correspondiente.",
+        "Crear frontend/propietarios.html con una tabla similar a la de inmuebles y un formulario para agregar propietarios.",
+        "Añadir enlaces de navegación entre index.html y propietarios.html usando data-testid 'link-usuarios'.",
+        "Incluir CSS básico en el mismo HTML o como archivo separado para estilizar tablas, botones y modal."
+      ]
+    },
+    {
+      "etapa": "e2e",
+      "tareas": [
+        "Crear un proyecto Cypress dentro de la raíz con carpeta cypress/e2e.",
+        "Escribir una prueba e2e que navegue a 'frontend/index.html', verifique la existencia del botón 'Agregar Inmueble' y haga clic para abrir el modal.",
+        "Simular la creación de un nuevo inmueble seleccionando un propietario existente, rellenar campos obligatorios y enviar el formulario.",
+        "Verificar que la tabla muestra una nueva fila con los datos ingresados usando data-testid 'inmuebles-table'.",
+        "Prueba adicional: editar la primera fila, cambiar el precio, guardar y comprobar que el valor actualizado aparece en la tabla.",
+        "Prueba de eliminación: eliminar la misma fila y confirmar que ya no está presente en la tabla."
+      ]
+    }
+  ]
+}
