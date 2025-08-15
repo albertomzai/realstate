@@ -1,66 +1,59 @@
-"""API routes for the real estate backend."""
-
-from flask import Blueprint, request, jsonify
-from .models import Inmueble, Propietario, _db as db
+from flask import Blueprint, request, jsonify, abort
+from .models import Inmueble, Propietario
+from . import db
 
 api_bp = Blueprint('api', __name__)
 
-# Helper functions
-
-def get_inmueble_or_404(inmueble_id):
-    inmueble = Inmueble.query.get(inmueble_id)
-    if not inmueble:
-        return None, jsonify({'error': 'Inmueble no encontrado'}), 404
-    return inmueble, None, None
-
-# Routes for inmuebles
+# --- Inmuebles endpoints ---
 
 @api_bp.route('/inmuebles', methods=['GET'])
 def get_inmuebles():
-    """Return a list of all inmuebles with owner data."""
     inmuebles = Inmueble.query.all()
-    return jsonify([i.to_dict() for i in inmuebles]), 200
+    return jsonify([i.to_dict() for i in inmuebles])
 
 @api_bp.route('/inmuebles', methods=['POST'])
 def create_inmueble():
     data = request.get_json() or {}
     required_fields = ['direccion', 'ciudad', 'tipo']
     if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Campos requeridos faltantes'}), 400
+        abort(400, description='Missing required fields')
 
-    inmueble = Inmueble(**data)
+    inmueble = Inmueble(**{
+        'direccion': data['direccion'],
+        'ciudad': data['ciudad'],
+        'tipo': data['tipo'],
+        'precio_alquiler': data.get('precio_alquiler'),
+        'disponible': data.get('disponible', True),
+        'propietario_id': data.get('propietario_id')
+    })
+
     db.session.add(inmueble)
     db.session.commit()
+
     return jsonify(inmueble.to_dict()), 201
 
-@api_bp.route('/inmuebles/<int:inmueble_id>', methods=['PUT'])
-def update_inmueble(inmueble_id):
-    inmueble, err_resp, status = get_inmueble_or_404(inmueble_id)
-    if err_resp:
-        return err_resp, status
-
+@api_bp.route('/inmuebles/<int:id>', methods=['PUT'])
+def update_inmueble(id):
+    inmueble = Inmueble.query.get_or_404(id)
     data = request.get_json() or {}
-    for key in ['direccion', 'ciudad', 'tipo', 'precio_alquiler', 'disponible', 'propietario_id']:
-        if key in data:
-            setattr(inmueble, key, data[key])
+
+    for field in ['direccion', 'ciudad', 'tipo', 'precio_alquiler', 'disponible', 'propietario_id']:
+        if field in data:
+            setattr(inmueble, field, data[field])
 
     db.session.commit()
-    return jsonify(inmueble.to_dict()), 200
+    return jsonify(inmueble.to_dict())
 
-@api_bp.route('/inmuebles/<int:inmueble_id>', methods=['DELETE'])
-def delete_inmueble(inmueble_id):
-    inmueble, err_resp, status = get_inmueble_or_404(inmueble_id)
-    if err_resp:
-        return err_resp, status
-
+@api_bp.route('/inmuebles/<int:id>', methods=['DELETE'])
+def delete_inmueble(id):
+    inmueble = Inmueble.query.get_or_404(id)
     db.session.delete(inmueble)
     db.session.commit()
-    return jsonify({'message': 'Inmueble eliminado'}), 200
+    return jsonify({'message': 'Inmueble deleted successfully'})
 
-# Routes for propietarios
+# --- Propietarios endpoints ---
 
 @api_bp.route('/propietarios', methods=['GET'])
 def get_propietarios():
-    """Return a list of all propietarios."""
     propietarios = Propietario.query.all()
-    return jsonify([p.to_dict() for p in propietarios]), 200
+    return jsonify([p.to_dict() for p in propietarios])

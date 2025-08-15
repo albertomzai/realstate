@@ -1,40 +1,26 @@
-"""Backend package initialization.
-
-This module creates the Flask application factory and configures the database.
-"""
-
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
-_db = None
+# Initialise the database object
+db = SQLAlchemy()
 
-def create_app():
-    """Create and configure a new Flask application.
-
-    Returns:
-        Flask: The configured Flask application instance.
-    """
+def create_app(test_config=None):
+    """Create and configure a new Flask application."""
     app = Flask(__name__, static_folder='../frontend', static_url_path='')
 
-    # Configure the SQLite database
+    # Default configuration
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inmobiliaria.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    global _db
-    _db = SQLAlchemy(app)
-    Migrate(app, _db)
+    if test_config is not None:
+        app.config.update(test_config)
 
-    # Import models to register them with SQLAlchemy
-    from . import models  # noqa: F401
+    # Initialise extensions
+    db.init_app(app)
 
-    # Register API blueprint
-    from .routes import api_bp  # noqa: E402
+    # Register blueprints
+    from .routes import api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
-
-    @app.route('/')
-    def index():
-        return app.send_static_file('index.html')
 
     # Error handlers
     @app.errorhandler(404)
@@ -43,10 +29,11 @@ def create_app():
 
     @app.errorhandler(400)
     def bad_request(error):
-        return jsonify({'error': 'Bad request', 'message': str(error)}), 400
+        return jsonify({'error': 'Bad request'}), 400
 
-    # Ensure tables are created
-    with app.app_context():
-        _db.create_all()
+    # Serve the index page for root URL
+    @app.route('/')
+    def index():
+        return app.send_static_file('index.html')
 
     return app

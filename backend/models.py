@@ -1,16 +1,14 @@
-"""SQLAlchemy models for the real estate application."""
+from . import db
 
-from . import _db as db
+# Association models for the real estate application
 
 class Propietario(db.Model):
-    """Representa a un propietario de inmuebles."""
-
     __tablename__ = 'propietarios'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(120), nullable=False)
+    nombre = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True)
-    telefono = db.Column(db.String(20))
+    telefono = db.Column(db.String(32))
 
     inmuebles = db.relationship('Inmueble', backref='propietario', lazy=True)
 
@@ -23,13 +21,11 @@ class Propietario(db.Model):
         }
 
 class Inmueble(db.Model):
-    """Representa un inmueble disponible para alquiler."""
-
     __tablename__ = 'inmuebles'
 
     id = db.Column(db.Integer, primary_key=True)
-    direccion = db.Column(db.String(200), nullable=False)
-    ciudad = db.Column(db.String(100), nullable=False)
+    direccion = db.Column(db.String(256), nullable=False)
+    ciudad = db.Column(db.String(64), nullable=False)
     tipo = db.Column(db.Enum('Piso', 'Casa', 'Local', name='tipo_enum'), nullable=False)
     precio_alquiler = db.Column(db.Float)
     disponible = db.Column(db.Boolean, default=True)
@@ -50,12 +46,10 @@ class Inmueble(db.Model):
         }
 
 class Inquilino(db.Model):
-    """Representa a un inquilino que alquila un inmueble."""
-
     __tablename__ = 'inquilinos'
 
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(120), nullable=False)
+    nombre = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True)
     inmueble_alquilado_id = db.Column(db.Integer, db.ForeignKey('inmuebles.id'))
 
