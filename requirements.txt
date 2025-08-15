@@ -1,3 +1,6 @@
+"""Requirements for the real estate backend."""
+
 Flask
 Flask-SQLAlchemy
+Flask-Migrate
 pytest
